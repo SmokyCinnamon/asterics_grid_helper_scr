@@ -1,0 +1,15 @@
+charset,UTF-8
+
+name,Asterics Grid Helper
+type,ghost
+
+shiori,yaya.dll
+
+craftman,SmokyCinnamonRoll
+craftmanw,SmokyCinnamonRoll
+craftmanurl,https://smokycinnamon.github.io/indifferentsorrel/index.html
+
+sakura.name,Main
+kero.name,Secondary
+
+sstp.allowunspecifiedsend,0

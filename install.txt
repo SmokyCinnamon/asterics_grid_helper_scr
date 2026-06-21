@@ -1,0 +1,5 @@
+charset,UTF-8
+type,ghost
+
+name,Asterics GRID Helper
+directory,asterics_grid_helper_scr

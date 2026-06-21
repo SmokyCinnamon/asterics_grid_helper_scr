@@ -1,0 +1,169 @@
+On_homeurl; ""
+
+OnBoot {
+	FileToOpen = ""
+	FolderToOpen = ""
+	"\0\s[0]\1\s[-1] \e"
+}
+
+OnSurfaceRestore {
+	"\0\s[0]\1\s[-1]\e"
+}
+
+
+OnMouseDoubleClick {
+	//if reference4 == 0; 
+	OnSakuraMenu
+}
+
+OnClose {
+	"\0\-"
+}
+
+
+OnSakuraMenu : all {
+	"\_q\0\s[0]\n[half]\*"
+	"%*\__q[OnWordListExtractorMenu.OBF]Word list extractor\__q\n\n"
+	"\n[half]%*\__q[OnCloseMenu]Close menu\__q"
+	"\_q"
+}
+
+/*OnWordListExtractorMenu.TXTGRD : all {
+	FileToOpen = "%(reference2)"
+	"\_q\0\s[0]\n[half]\*"
+	"\f[color,disable]Word list extractor\f[color,default]\n\n"
+	"File Selected: %(FileToOpen)\n\n"
+	"%*\__q[OnFilePick,wordlistextractor.txtgrd]Pick .GRD/.TXT File\__q\n\n"
+	"%*\__q[OnWordListExtractor]Extract word list from selected file\__q\n\n"
+	"\n[half]%*\__q[OnSakuraMenu]Main Menu\__q\n%*\__q[OnCloseMenu]Close menu\__q"
+	"\_q"
+}*/
+
+OnWordListExtractorMenu.OBF : all {
+	FileToOpen = "%(reference2)"
+	"\_q\0\s[0]\n[half]\*"
+	"\f[color,disable]Word list extractor\f[color,default]\n\n[half]"
+	"Extract word list from an un-zipped obz file. (obz_folder/boards/)"
+	"Folder Selected: %(FolderToOpen)\n\n"
+	"%*\__q[OnFilePick,wordlistextractor.obf]Pick Folder\__q\n\n"
+	"%*\__q[OnWordListExtractor.OBF]Extract word list from selected folder\__q\n\n"
+	"\n[half]%*\__q[OnSakuraMenu]Main Menu\__q\n%*\__q[OnCloseMenu]Close menu\__q"
+	"\_q"
+}
+
+OnFilePick {
+	if reference0 == "wordlistextractor.txtgrd" {
+		"\![open,dialog,open]"
+	}
+	elseif reference0 == "wordlistextractor.obf" {
+		"\![open,dialog,folder]"
+	}
+}
+
+OnSystemDialog {
+	//LOGGING(FileToOpen)
+	//LOGGING("can anyone hear meeee")
+	//LOGGING(reference)
+	if reference0 == "open" {
+		FileToOpen = "%(reference2)"
+		LOGGING(FileToOpen)
+			--
+			OnWordListExtractorMenu.TXTGRD //there has to be a better way
+	}
+	elseif reference0 == "folder" {
+		FolderToOpen = "%(reference2)"
+		--
+		OnWordListExtractorMenu.OBF
+	}
+}
+
+/*OnWordListExtractor.TXTGRD {
+	_file = FileToOpen
+	_extractedFile = "exports/grid_word_list.txt"
+	
+	_f = FOPEN(_file,'r') //open file read mode
+	_f = FOPEN(_extractedFile,'w')
+	--
+	"\_qFiles opened\_q\x"
+	--
+	for _buff = FREAD(_file); _buff != -1; _buff = FREAD(_file) {
+		LOGGING("Buffer:")
+		LOGGING(_buff)
+		if RE_GREP(_buff,'"y":\d+?,("label":\{\".+?\"\:\"(.+?)\"\}),"pronunciation"') 
+		{
+			LOGGING("Regex result:")
+			_regexResult = RE_GETSTR
+			LOGGING(_regexResult)
+			foreach _regexResult; _arrayElement {
+				LOGGING(_arrayElement)
+				_word = ''
+				if RE_SEARCH(_arrayElement,'"y":\d+?,("label":\{\".+?\"\:\"(.+?)\"\}),"pronunciation"')
+				{
+					//i dont need the whole thing again but why reinvent the wheel
+					LOGGING("Second regex result (from array)")
+					LOGGING(RE_GETSTR)
+					_regexResultArray = RE_GETSTR
+					_word = _regexResultArray[2]
+				
+					_f = FWRITE(_extractedFile,"%(_word)")
+				}
+			}
+		}
+	}
+	_f = FCLOSE(_file)
+	_f = FCLOSE(_extractedFile)
+}*/
+
+OnWordListExtractor.OBF {
+	_folderFiles = FENUM(FolderToOpen)
+	_folderFiles = SPLIT(_folderFiles,',')
+	LOGGING(_folderFiles)
+	
+	_extractedFile = "exports/obf_word_list.txt"
+	_f = FOPEN(_extractedFile,'w')
+	
+	foreach _folderFiles; _file {
+		LOGGING(FolderToOpen)
+		LOGGING(_file)
+		_file = "%(FolderToOpen)" + "/%(_file)"
+		LOGGING(_file)
+		_f = FOPEN(_file,'r') //open file read mode
+		LOGGING(_f)
+		--
+		for _buff = FREAD(_file); _buff != -1; _buff = FREAD(_file) {
+			LOGGING("Buffer:")
+			LOGGING(_buff)
+			if RE_GREP(_buff,'("label"\:\"(.+?)\")')
+			{
+				LOGGING("Regex result:")
+				_regexResult = RE_GETSTR
+				LOGGING(_regexResult)
+				foreach _regexResult; _arrayElement {
+					LOGGING(_arrayElement)
+					_word = ''
+					if RE_SEARCH(_arrayElement,'("label"\:\"(.+?)\")')
+					{
+						//i dont need the whole thing again but why reinvent the wheel
+						LOGGING("Second regex result (from array)")
+						LOGGING(RE_GETSTR)
+						_regexResultArray = RE_GETSTR
+						_word = _regexResultArray[2]
+					
+						_f = FWRITE(_extractedFile,"%(_word)")
+					}
+				}
+			}
+		}
+		_f = FCLOSE(_file)
+	}
+	_f = FCLOSE(_extractedFile)
+	--
+	"\![get,property,OnOpenExtracted,currentghost.path]"
+}
+
+OnOpenExtracted {
+	_path = reference0
+	_path = REPLACE(_path,'\','/')
+	_path = _path + "ghost/master/exports/"
+	"\_qCurrent path: %(_path)\_q\x\![open,dialog,open,--dir=%(_path)]"
+}
