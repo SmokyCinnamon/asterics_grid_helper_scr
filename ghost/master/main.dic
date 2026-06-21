@@ -1,4 +1,11 @@
-On_homeurl; ""
+On_homeurl {
+	"https://raw.githubusercontent.com/SmokyCinnamon/asterics_grid_helper_scr/refs/heads/main/"
+}
+
+
+ghostver {
+	"1.0.0"
+}
 
 OnBoot {
 	FileToOpen = ""
@@ -24,13 +31,13 @@ OnClose {
 OnSakuraMenu : all {
 	"\_q\0\s[0]\n[half]\*"
 	"%*\__q[OnWordListExtractorMenu.OBF]Word list extractor\__q\n\n"
-	"\n[half]%*\__q[OnCloseMenu]Close menu\__q"
-	"\_q"
+	"\n[half]%*\__q[OnCloseMenu]Close menu\__q\n"
+	"%(ghostver)\_q"
 }
 
 /*OnWordListExtractorMenu.TXTGRD : all {
 	FileToOpen = "%(reference2)"
-	"\_q\0\s[0]\n[half]\*"
+	"\_q\0\s[0]\b[2]\n[half]\*"
 	"\f[color,disable]Word list extractor\f[color,default]\n\n"
 	"File Selected: %(FileToOpen)\n\n"
 	"%*\__q[OnFilePick,wordlistextractor.txtgrd]Pick .GRD/.TXT File\__q\n\n"
@@ -41,9 +48,9 @@ OnSakuraMenu : all {
 
 OnWordListExtractorMenu.OBF : all {
 	FileToOpen = "%(reference2)"
-	"\_q\0\s[0]\n[half]\*"
+	"\_q\0\s[0]\b[2]\n[half]\*"
 	"\f[color,disable]Word list extractor\f[color,default]\n\n[half]"
-	"Extract word list from an un-zipped obz file. (obz_folder/boards/)"
+	"Extract word list from an un-zipped obz file. (obz_folder/boards/)\n\n"
 	"Folder Selected: %(FolderToOpen)\n\n"
 	"%*\__q[OnFilePick,wordlistextractor.obf]Pick Folder\__q\n\n"
 	"%*\__q[OnWordListExtractor.OBF]Extract word list from selected folder\__q\n\n"
