@@ -6,3 +6,8 @@
 
 */profile
 */var
+
+ghost/master/profile/*
+shell/master/profile/*
+
+ghost/master/yaya_variable.cfg
